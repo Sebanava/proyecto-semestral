@@ -1,0 +1,1 @@
+ALTER TABLE clientes ADD COLUMN direccion VARCHAR(200) NOT NULL;

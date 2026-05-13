@@ -1,0 +1,6 @@
+CREATE TABLE pago (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id_rental BIGINT NOT NULL,
+    resultado VARCHAR(50) NOT NULL,
+    fecha DATE NOT NULL
+);
