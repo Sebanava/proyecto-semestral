@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 import com.arriendo.rental.rental;
 import com.arriendo.rental.DTO.PeliculaDTO;
 import com.arriendo.rental.repository.RentalRepository;
+import com.arriendo.rental.client.InventarioClient;
 import com.arriendo.rental.client.PeliculaClient;
 import com.arriendo.rental.model.RentalModel;
 
 @Service
 public class RentalService {
+
+    @Autowired
+    private InventarioClient inventarioClient;
 
     @Autowired
     private RentalRepository repository;
@@ -23,20 +27,21 @@ public class RentalService {
     public List<rental> obtenertodo(){
         return repository.findAll();
     }
+public rental guardar(RentalModel model){
+    PeliculaDTO pelicula = peliculaClient.obtenerPorId(model.getId_pelicula());
 
-    public rental guardar(RentalModel model){
-        PeliculaDTO pelicula = peliculaClient.obtenerPorId(model.getId_pelicula());
+    rental nuevoRental = new rental();
+    nuevoRental.setId_cliente(model.getId_cliente());
+    nuevoRental.setId_pelicula(model.getId_pelicula());
+    nuevoRental.setFecha_inicio(model.getFecha_inicio());
+    nuevoRental.setFecha_fin(model.getFecha_fin());
+    nuevoRental.setEstado(model.getEstado());
+    nuevoRental.setMonto(pelicula.getPrecio());
 
-        rental nuevoRental = new rental();
-        nuevoRental.setId_cliente(model.getId_cliente());
-        nuevoRental.setId_pelicula(model.getId_pelicula());
-        nuevoRental.setFecha_inicio(model.getFecha_inicio());
-        nuevoRental.setFecha_fin(model.getFecha_fin());
-        nuevoRental.setEstado(model.getEstado());
-        nuevoRental.setMonto(pelicula.getPrecio());
-
-        return repository.save(nuevoRental);
-    }
+    rental resultado = repository.save(nuevoRental);
+    inventarioClient.ReducirStock(model.getId_pelicula());
+    return resultado;
+}
 
     public void eliminar(long id){
         repository.deleteById(id);
@@ -60,4 +65,5 @@ public class RentalService {
 
             return repository.save(rental);
     }
+
 }

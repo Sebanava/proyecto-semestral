@@ -1,6 +1,7 @@
 package com.arriendo.pago.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,8 @@ public class PagoService {
         repository.save(registro);
 
         return "Pago aprobado por $" + rental.getMonto();
+    }
+        public List<pago> obtenerTodo(){
+        return repository.findAll();
     }
 }
