@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arriendo.alertas.alertas;
@@ -23,38 +24,49 @@ import jakarta.validation.Valid;
 @RequestMapping("/alertas")
 public class AlertaController {
 
-
     @Autowired
     private AlertasService Service;
 
     @GetMapping
-    public ResponseEntity<List<alertas>>ObtenerTodo(){
+    public ResponseEntity<List<alertas>> ObtenerTodo(){
         return ResponseEntity.ok(Service.ObtenerTodo());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<alertas>ObtenerPorIncidencia(@PathVariable long id){
+    public ResponseEntity<alertas> ObtenerPorIncidencia(@PathVariable long id){
         return ResponseEntity.ok(Service.ObtenerPorIncidencia(id));
     }
 
-    @PostMapping 
-    public ResponseEntity<alertas>guardar(@Valid @RequestBody AlertasModel model){
+    @PostMapping
+    public ResponseEntity<?> guardar(@Valid @RequestBody AlertasModel model, @RequestParam String rol){
+        if (!rol.equals("OPERADOR")) {
+            return ResponseEntity.status(403).body("Solo un OPERADOR puede crear alertas");
+        }
         return ResponseEntity.status(201).body(Service.guardar(model));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String>eliminar(@PathVariable long id){
+    public ResponseEntity<?> eliminar(@PathVariable long id, @RequestParam String rol){
+        if (!rol.equals("OPERADOR")) {
+            return ResponseEntity.status(403).body("Solo un OPERADOR puede eliminar alertas");
+        }
         Service.eliminar(id);
         return ResponseEntity.ok("eliminado con exito");
     }
 
     @PutMapping("/{id}")
-        public ResponseEntity<alertas>actualizar(@PathVariable long id,@Valid @RequestBody AlertasModel model){
-            return ResponseEntity.ok(Service.actualizar(id, model));
+    public ResponseEntity<?> actualizar(@PathVariable long id, @Valid @RequestBody AlertasModel model, @RequestParam String rol){
+        if (!rol.equals("OPERADOR")) {
+            return ResponseEntity.status(403).body("Solo un OPERADOR puede actualizar alertas");
         }
+        return ResponseEntity.ok(Service.actualizar(id, model));
+    }
 
     @GetMapping("/verificar/{titulo}")
-    public ResponseEntity<String>VerificarStock(@PathVariable String titulo){
+    public ResponseEntity<?> VerificarStock(@PathVariable String titulo, @RequestParam String rol){
+        if (!rol.equals("OPERADOR")) {
+            return ResponseEntity.status(403).body("Solo un OPERADOR puede verificar stock");
+        }
         return ResponseEntity.ok(Service.VerificarStock(titulo));
     }
 }
