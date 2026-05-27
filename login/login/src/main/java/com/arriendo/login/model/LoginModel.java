@@ -24,6 +24,9 @@ public class LoginModel {
 
     @NotBlank(message = "El rut es obligatoria")
     private String rut;
-    
+
+    @NotBlank(message = "El campo Rol no puede estar vacio ")
+    private String rol;
+
 
 }

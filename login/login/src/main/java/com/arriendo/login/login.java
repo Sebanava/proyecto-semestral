@@ -35,6 +35,9 @@ public class login {
 
     @Column(nullable = false , unique =   true )
     private String rut;
+
+    @Column(nullable = false)
+    private String rol;
     
     
     

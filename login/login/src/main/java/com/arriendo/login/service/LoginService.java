@@ -33,7 +33,7 @@
                 return ResponseEntity.status(401).body("Contraseña incorrecta");
             }
             
-            return ResponseEntity.ok("Bienvenido " + usuario.get().getNombre());
+            return ResponseEntity.ok("Bienvenido " + usuario.get().getNombre() + "| Rol :" +    usuario.get().getRol());
         }
 
         public login guardar(login login){
@@ -53,7 +53,8 @@
             login.setNumero(model.getNumero());
             login.setPassword(model.getPassword());
             login.setRut(model.getRut());
+            login.setRol(model.getRol());
             return repository.save(login);
 
         }
-    }   
+    }       
