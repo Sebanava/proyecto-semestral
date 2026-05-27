@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arriendo.peliculas.Pelicula;
@@ -46,14 +47,20 @@ public class PeliculaController {
     }
 
     @PostMapping
-    public ResponseEntity<Pelicula> guardar(@Valid @RequestBody PeliculaModel Model) {
-        return ResponseEntity.status(201).body(service.guardar(Model));
-}
+    public ResponseEntity<?> guardar(@Valid @RequestBody PeliculaModel model, @RequestParam String rol) {
+        if (!rol.equals("ADMIN")) {
+            return ResponseEntity.status(403).body("Solo un ADMIN puede agregar películas");
+        }
+        return ResponseEntity.status(201).body(service.guardar(model));
+    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<?> eliminar(@PathVariable Long id, @RequestParam String rol) {
+        if (!rol.equals("ADMIN")) {
+            return ResponseEntity.status(403).body("Solo un ADMIN puede eliminar películas");
+        }
         service.eliminar(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Película eliminada con éxito");
     }
 
 
