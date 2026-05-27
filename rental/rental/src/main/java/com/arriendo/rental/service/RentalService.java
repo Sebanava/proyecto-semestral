@@ -39,7 +39,7 @@ public rental guardar(RentalModel model){
     nuevoRental.setMonto(pelicula.getPrecio());
 
     rental resultado = repository.save(nuevoRental);
-    inventarioClient.ReducirStock(model.getId_pelicula());
+    inventarioClient.reducirStock(model.getId_pelicula());
     return resultado;
 }
 
@@ -53,17 +53,16 @@ public rental guardar(RentalModel model){
     }
 
     public rental actualizar(long id, RentalModel model){
-        rental rental = repository.findById(id)
+        rental rentalExistente = repository.findById(id)
         .orElseThrow(()-> new RuntimeException("no encontrado"));
-            rental nuevoRental = new rental();
-            nuevoRental.setId_cliente(model.getId_cliente());
-            nuevoRental.setId_pelicula(model.getId_pelicula());
-            nuevoRental.setFecha_inicio(model.getFecha_inicio());
-            nuevoRental.setFecha_fin(model.getFecha_fin());
-            nuevoRental.setEstado(model.getEstado());
+            rentalExistente.setId_cliente(model.getId_cliente());
+            rentalExistente.setId_pelicula(model.getId_pelicula());
+            rentalExistente.setFecha_inicio(model.getFecha_inicio());
+            rentalExistente.setFecha_fin(model.getFecha_fin());
+            rentalExistente.setEstado(model.getEstado());
 
 
-            return repository.save(rental);
+            return repository.save(rentalExistente);
     }
 
 }
