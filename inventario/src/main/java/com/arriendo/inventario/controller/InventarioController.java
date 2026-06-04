@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arriendo.inventario.Inventario;
@@ -37,24 +38,33 @@ public class InventarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Inventario> guardar(@Valid @RequestBody InventarioModel model){
+    public ResponseEntity<?> guardar(@Valid @RequestBody InventarioModel model, @RequestParam String rol){
+        if (!rol.equals("ADMIN")) {
+            return ResponseEntity.status(403).body("Solo un ADMIN puede crear inventario");
+        }
         return ResponseEntity.status(201).body(service.guardar(model));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Inventario> actualizar(@PathVariable Long id, @Valid @RequestBody InventarioModel model){
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody InventarioModel model, @RequestParam String rol){
+        if (!rol.equals("ADMIN")) {
+            return ResponseEntity.status(403).body("Solo un ADMIN puede actualizar inventario");
+        }
         return ResponseEntity.ok(service.actualizar(id, model));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable Long id){
+    public ResponseEntity<?> eliminar(@PathVariable Long id, @RequestParam String rol){
+        if (!rol.equals("ADMIN")) {
+            return ResponseEntity.status(403).body("Solo un ADMIN puede eliminar inventario");
+        }
         service.eliminar(id);
-        return ResponseEntity.ok("Inventario eliminado con éxito");
+        return ResponseEntity.ok("Inventario eliminado con exito");
     }
 
     @PostMapping("/reducir/{idPelicula}")
     public ResponseEntity<String> reducirStock(@PathVariable Long idPelicula){
         service.reducirStock(idPelicula);
         return ResponseEntity.ok("Stock reducido exitosamente");
-}
+    }
 }
