@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\seban\\\\OneDrive\\\\Desktop\\\\proyecto-semestral\" -Directory)",
-      "Bash(Select-Object Name)"
-    ]
-  }
-}
