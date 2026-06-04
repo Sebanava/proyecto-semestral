@@ -37,6 +37,11 @@ public class InventarioController {
         return ResponseEntity.ok(service.obtenerPorId(id));
     }
 
+    @GetMapping("/pelicula/{idPelicula}")
+    public ResponseEntity<Inventario> obtenerPorIdPelicula(@PathVariable Long idPelicula){
+        return ResponseEntity.ok(service.obtenerPorIdPelicula(idPelicula));
+    }
+
     @PostMapping
     public ResponseEntity<?> guardar(@Valid @RequestBody InventarioModel model, @RequestParam String rol){
         if (!rol.equals("ADMIN")) {

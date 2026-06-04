@@ -27,21 +27,22 @@ public class RentalService {
     public List<rental> obtenertodo(){
         return repository.findAll();
     }
-public rental guardar(RentalModel model){
-    PeliculaDTO pelicula = peliculaClient.obtenerPorId(model.getId_pelicula());
 
-    rental nuevoRental = new rental();
-    nuevoRental.setId_cliente(model.getId_cliente());
-    nuevoRental.setId_pelicula(model.getId_pelicula());
-    nuevoRental.setFecha_inicio(model.getFecha_inicio());
-    nuevoRental.setFecha_fin(model.getFecha_fin());
-    nuevoRental.setEstado(model.getEstado());
-    nuevoRental.setMonto(pelicula.getPrecio());
+    public rental guardar(RentalModel model){
+        PeliculaDTO pelicula = peliculaClient.obtenerPorId(model.getId_pelicula());
 
-    rental resultado = repository.save(nuevoRental);
-    inventarioClient.reducirStock(model.getId_pelicula());
-    return resultado;
-}
+        rental nuevoRental = new rental();
+        nuevoRental.setId_cliente(model.getId_cliente());
+        nuevoRental.setId_pelicula(model.getId_pelicula());
+        nuevoRental.setFecha_inicio(model.getFecha_inicio());
+        nuevoRental.setFecha_fin(model.getFecha_fin());
+        nuevoRental.setEstado(model.getEstado());
+        nuevoRental.setMonto(pelicula.getPrecio());
+
+        rental resultado = repository.save(nuevoRental);
+        inventarioClient.ReducirStock(model.getId_pelicula());
+        return resultado;
+    }
 
     public void eliminar(long id){
         repository.deleteById(id);
@@ -60,7 +61,6 @@ public rental guardar(RentalModel model){
             rentalExistente.setFecha_inicio(model.getFecha_inicio());
             rentalExistente.setFecha_fin(model.getFecha_fin());
             rentalExistente.setEstado(model.getEstado());
-
 
             return repository.save(rentalExistente);
     }

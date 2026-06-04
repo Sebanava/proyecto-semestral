@@ -24,6 +24,11 @@ public class InventarioService {
             .orElseThrow(()-> new RuntimeException("no encontrado"));
     }
 
+    public Inventario obtenerPorIdPelicula(Long idPelicula){
+        return repository.findByIdPelicula(idPelicula)
+            .orElseThrow(()-> new RuntimeException("Inventario no encontrado"));
+    }
+
     public Inventario guardar(InventarioModel model){
         Inventario inventario = new Inventario();
         inventario.setStock_total(model.getStock_total());
@@ -31,7 +36,6 @@ public class InventarioService {
         inventario.setStock_arrendadas(model.getStock_arrendadas());
         inventario.setStock_disponible(model.getStock_disponible());
         return repository.save(inventario);
-        
     }
 
     public Inventario actualizar(Long id, InventarioModel model){
@@ -51,15 +55,15 @@ public class InventarioService {
     }
 
     public void reducirStock(Long idPelicula){
-    Inventario inventario = repository.findById(idPelicula)
-        .orElseThrow(() -> new RuntimeException("Inventario no encontrado"));
-    
-    if(inventario.getStock_disponible() <= 0){
-        throw new RuntimeException("Sin stock disponible");
+        Inventario inventario = repository.findByIdPelicula(idPelicula)
+            .orElseThrow(() -> new RuntimeException("Inventario no encontrado"));
+
+        if(inventario.getStock_disponible() <= 0){
+            throw new RuntimeException("Sin stock disponible");
+        }
+
+        inventario.setStock_disponible(inventario.getStock_disponible() - 1);
+        inventario.setStock_arrendadas(inventario.getStock_arrendadas() + 1);
+        repository.save(inventario);
     }
-    
-    inventario.setStock_disponible(inventario.getStock_disponible() - 1);
-    inventario.setStock_arrendadas(inventario.getStock_arrendadas() + 1);
-    repository.save(inventario);
-}
 }
