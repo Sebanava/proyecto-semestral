@@ -6,6 +6,9 @@ spring:
     name: gateway
   cloud:
     gateway:
+      httpclient:
+        ssl:
+          useInsecureTrustManager: true
       routes:
         - id: peliculas_route
           uri: https://peliculas-production-a9ea.up.railway.app
