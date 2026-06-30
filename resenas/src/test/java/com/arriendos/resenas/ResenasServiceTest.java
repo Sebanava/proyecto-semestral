@@ -31,8 +31,6 @@ class ResenasServiceTest {
     @InjectMocks
     private ResenasService service;
 
-    // ── Tests existentes ────────────────────────────────────────
-
     @Test
     void obtenerPorId_cuandoNoExiste_lanzaExcepcion() {
         when(repository.findById(99L)).thenReturn(Optional.empty());
@@ -52,8 +50,6 @@ class ResenasServiceTest {
         when(repository.findById(99L)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> service.eliminar(99L));
     }
-
-    // ── Tests nuevos: Feign error handling ──────────────────────
 
     @Test
     void guardar_cuandoPeliculaServiceNoDisponible_lanzaServicioNoDisponibleException() {

@@ -29,8 +29,6 @@ class PagoServiceTest {
     @InjectMocks
     private PagoService service;
 
-    // ── Tests existentes ────────────────────────────────────────
-
     @Test
     void procesarPago_cuandoTarjetaInvalida_lanzaExcepcion() {
         PagoModel model = new PagoModel();
@@ -80,8 +78,6 @@ class PagoServiceTest {
         String resultado = service.procesarPago(model);
         assertTrue(resultado.contains("aprobado") || resultado.contains("5000"));
     }
-
-    // ── Tests nuevos: Feign error handling ──────────────────────
 
     @Test
     void procesarPago_cuandoRentalServiceNoDisponible_lanzaServicioNoDisponibleException() {

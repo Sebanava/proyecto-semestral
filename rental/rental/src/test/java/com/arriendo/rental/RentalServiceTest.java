@@ -35,8 +35,6 @@ class RentalServiceTest {
     @InjectMocks
     private RentalService service;
 
-    // ── Tests existentes ────────────────────────────────────────
-
     @Test
     void obtenerPorId_cuandoNoExiste_lanzaExcepcion() {
         when(repository.findById(99L)).thenReturn(Optional.empty());
@@ -69,8 +67,6 @@ class RentalServiceTest {
         when(repository.findById(1L)).thenReturn(Optional.of(rentalExistente));
         assertThrows(RuntimeException.class, () -> service.devolver(1L));
     }
-
-    // ── Tests nuevos: Feign error handling ──────────────────────
 
     @Test
     void guardar_cuandoPeliculaServiceNoDisponible_lanzaServicioNoDisponibleException() {
