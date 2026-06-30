@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.arriendo.rental.rental;
 import com.arriendo.rental.DTO.PeliculaDTO;
+import com.arriendo.rental.exception.RecursoNoEncontradoException;
+import com.arriendo.rental.exception.ServicioNoDisponibleException;
 import com.arriendo.rental.repository.RentalRepository;
 import com.arriendo.rental.client.InventarioClient;
 import com.arriendo.rental.client.PeliculaClient;
@@ -33,7 +35,16 @@ public class RentalService {
             throw new RuntimeException("La fecha de fin no puede ser anterior a la fecha de inicio");
         }
 
-        PeliculaDTO pelicula = peliculaClient.obtenerPorId(model.getId_pelicula());
+        PeliculaDTO pelicula;
+        try {
+            pelicula = peliculaClient.obtenerPorId(model.getId_pelicula());
+        } catch (feign.FeignException.NotFound e) {
+            throw new RecursoNoEncontradoException(
+                "La película con id " + model.getId_pelicula() + " no existe");
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Películas no está disponible. Intente más tarde.");
+        }
 
         rental nuevoRental = new rental();
         nuevoRental.setId_cliente(model.getId_cliente());
@@ -44,7 +55,14 @@ public class RentalService {
         nuevoRental.setMonto(pelicula.getPrecio());
 
         rental resultado = repository.save(nuevoRental);
-        inventarioClient.ReducirStock(model.getId_pelicula());
+
+        try {
+            inventarioClient.ReducirStock(model.getId_pelicula());
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Inventario no está disponible. Intente más tarde.");
+        }
+
         return resultado;
     }
 
@@ -87,7 +105,13 @@ public class RentalService {
         }
         rentalExistente.setEstado("devuelto");
         repository.save(rentalExistente);
-        inventarioClient.AumentarStock(rentalExistente.getId_pelicula());
+
+        try {
+            inventarioClient.AumentarStock(rentalExistente.getId_pelicula());
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Inventario no está disponible. Intente más tarde.");
+        }
     }
 
 }

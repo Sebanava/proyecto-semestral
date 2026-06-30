@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.arriendo.pago.pago;
 import com.arriendo.pago.DTO.RentalDTO;
 import com.arriendo.pago.client.RentalClient;
+import com.arriendo.pago.exception.RecursoNoEncontradoException;
+import com.arriendo.pago.exception.ServicioNoDisponibleException;
 import com.arriendo.pago.model.PagoModel;
 import com.arriendo.pago.repository.PagoRepository;
 
@@ -31,7 +33,16 @@ public class PagoService {
             throw new RuntimeException("Forma de pago inválida: CVV debe tener 3 dígitos");
         }
 
-        RentalDTO rental = rentalClient.obtenerRental(model.getId_rental());
+        RentalDTO rental;
+        try {
+            rental = rentalClient.obtenerRental(model.getId_rental());
+        } catch (feign.FeignException.NotFound e) {
+            throw new RecursoNoEncontradoException(
+                "El arriendo con id " + model.getId_rental() + " no existe");
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Arriendos no está disponible. Intente más tarde.");
+        }
 
         if ("pagado".equals(rental.getEstado())) {
             throw new RuntimeException("Este arriendo ya fue pagado");
@@ -43,10 +54,16 @@ public class PagoService {
         registro.setFecha(LocalDate.now());
         repository.save(registro);
 
-        rentalClient.pagarRental(model.getId_rental());
+        try {
+            rentalClient.pagarRental(model.getId_rental());
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Arriendos no está disponible para actualizar el estado.");
+        }
 
         return "Pago aprobado por $" + rental.getMonto();
     }
+
     public List<pago> obtenerTodo(){
         return repository.findAll();
     }

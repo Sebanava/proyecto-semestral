@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.arriendos.resenas.Resenas;
 import com.arriendos.resenas.cliente.PeliculaClient;
+import com.arriendos.resenas.exception.RecursoNoEncontradoException;
+import com.arriendos.resenas.exception.ServicioNoDisponibleException;
 import com.arriendos.resenas.model.ResenasModel;
 import com.arriendos.resenas.repository.ResenasRepository;
 
@@ -16,21 +18,19 @@ public class ResenasService {
     @Autowired
     private ResenasRepository repository;
 
-    @Autowired 
+    @Autowired
     PeliculaClient peliculaClient;
 
-
-    public List<Resenas>ObtenerTodo(){
+    public List<Resenas> ObtenerTodo(){
         return repository.findAll();
     }
 
-    public List<Resenas>ObtenerPorTitulo(String titulo){
+    public List<Resenas> ObtenerPorTitulo(String titulo){
         List<Resenas> resenas = repository.findByTitulo(titulo);
-            if (resenas.isEmpty()){
-                throw new RuntimeException("No se encuentrar reseñas para " + titulo);
-            }
-
-            return resenas;
+        if (resenas.isEmpty()){
+            throw new RuntimeException("No se encuentrar reseñas para " + titulo);
+        }
+        return resenas;
     }
 
     public Resenas obtenerPorId(Long id){
@@ -54,16 +54,20 @@ public class ResenasService {
     }
 
     public Resenas guardar(ResenasModel model){
-        peliculaClient.obtenerPorTitulo(model.getTitulo());
+        try {
+            peliculaClient.obtenerPorTitulo(model.getTitulo());
+        } catch (feign.FeignException.NotFound e) {
+            throw new RecursoNoEncontradoException(
+                "La película '" + model.getTitulo() + "' no existe en el catálogo");
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Películas no está disponible. Intente más tarde.");
+        }
 
         Resenas resena = new Resenas();
         resena.setTitulo(model.getTitulo());
         resena.setCalificaciones(model.getCalificaciones());
         resena.setComentario(model.getComentario());
-
-
         return repository.save(resena);
     }
-    
-    
 }

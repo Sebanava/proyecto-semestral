@@ -12,6 +12,7 @@ import com.arriendo.reportes.DTO.RentalDTO;
 import com.arriendo.reportes.cliente.ClienteClient;
 import com.arriendo.reportes.cliente.PagoClient;
 import com.arriendo.reportes.cliente.RentalClient;
+import com.arriendo.reportes.exception.ServicioNoDisponibleException;
 import com.arriendo.reportes.model.ReportesModel;
 import com.arriendo.reportes.repository.ReportesRepository;
 
@@ -63,9 +64,29 @@ public class ReportesService {
     }
 
     public String resumen(){
-        List<ClienteDTO> clientes = clienteClient.ObtenerTodo();
-        List<RentalDTO> rentals = rentalClient.ObtenerTodo();
-        List<PagoDTO> pagos = pagoClient.ObtenerTodo();
+        List<ClienteDTO> clientes;
+        try {
+            clientes = clienteClient.ObtenerTodo();
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Clientes no está disponible. Intente más tarde.");
+        }
+
+        List<RentalDTO> rentals;
+        try {
+            rentals = rentalClient.ObtenerTodo();
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Arriendos no está disponible. Intente más tarde.");
+        }
+
+        List<PagoDTO> pagos;
+        try {
+            pagos = pagoClient.ObtenerTodo();
+        } catch (feign.FeignException e) {
+            throw new ServicioNoDisponibleException(
+                "El servicio de Pagos no está disponible. Intente más tarde.");
+        }
 
         long totalClientes = clientes.size();
         long totalArriendos = rentals.size();
@@ -79,6 +100,6 @@ public class ReportesService {
         return "Total clientes: " + totalClientes +
                " | Total arriendos: " + totalArriendos +
                " | Arriendos activos: " + arriendosActivos +
-               " | Pagos aprobados: " + pagosAprobados ;
+               " | Pagos aprobados: " + pagosAprobados;
     }
 }

@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.arriendo.alertas.DTO.ErrorDTO;
-
+import com.arriendo.alertas.exception.RecursoNoEncontradoException;
+import com.arriendo.alertas.exception.ServicioNoDisponibleException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
@@ -33,6 +34,22 @@ public class ManejadorErrores {
         );
 
         return ResponseEntity.badRequest().body(errorDTO);
+    }
+
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<ErrorDTO> manejarRecursoNoEncontrado(
+            RecursoNoEncontradoException ex, HttpServletRequest request) {
+        ErrorDTO errorDTO = new ErrorDTO(
+            LocalDateTime.now(), 404, ex.getMessage(), null, request.getRequestURI());
+        return ResponseEntity.status(404).body(errorDTO);
+    }
+
+    @ExceptionHandler(ServicioNoDisponibleException.class)
+    public ResponseEntity<ErrorDTO> manejarServicioNoDisponible(
+            ServicioNoDisponibleException ex, HttpServletRequest request) {
+        ErrorDTO errorDTO = new ErrorDTO(
+            LocalDateTime.now(), 503, ex.getMessage(), null, request.getRequestURI());
+        return ResponseEntity.status(503).body(errorDTO);
     }
 
     @ExceptionHandler(RuntimeException.class)

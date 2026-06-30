@@ -1,8 +1,12 @@
 package com.arriendos.resenas;
 
+import com.arriendos.resenas.cliente.PeliculaClient;
+import com.arriendos.resenas.exception.RecursoNoEncontradoException;
+import com.arriendos.resenas.exception.ServicioNoDisponibleException;
+import com.arriendos.resenas.model.ResenasModel;
 import com.arriendos.resenas.repository.ResenasRepository;
 import com.arriendos.resenas.service.ResenasService;
-import com.arriendos.resenas.cliente.PeliculaClient;
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,10 +31,11 @@ class ResenasServiceTest {
     @InjectMocks
     private ResenasService service;
 
+    // ── Tests existentes ────────────────────────────────────────
+
     @Test
     void obtenerPorId_cuandoNoExiste_lanzaExcepcion() {
         when(repository.findById(99L)).thenReturn(Optional.empty());
-
         assertThrows(RuntimeException.class, () -> service.obtenerPorId(99L));
     }
 
@@ -38,7 +43,6 @@ class ResenasServiceTest {
     void obtenerPorTitulo_cuandoNoHayResenas_lanzaExcepcion() {
         when(repository.findByTitulo("PeliculaInexistente"))
             .thenReturn(Collections.emptyList());
-
         assertThrows(RuntimeException.class,
             () -> service.ObtenerPorTitulo("PeliculaInexistente"));
     }
@@ -46,7 +50,34 @@ class ResenasServiceTest {
     @Test
     void eliminar_cuandoResenaNoExiste_lanzaExcepcion() {
         when(repository.findById(99L)).thenReturn(Optional.empty());
-
         assertThrows(RuntimeException.class, () -> service.eliminar(99L));
+    }
+
+    // ── Tests nuevos: Feign error handling ──────────────────────
+
+    @Test
+    void guardar_cuandoPeliculaServiceNoDisponible_lanzaServicioNoDisponibleException() {
+        ResenasModel model = new ResenasModel();
+        model.setTitulo("Inception");
+        model.setComentario("Muy buena pelicula");
+        model.setCalificaciones(9);
+
+        when(peliculaClient.obtenerPorTitulo("Inception"))
+            .thenThrow(mock(FeignException.class));
+
+        assertThrows(ServicioNoDisponibleException.class, () -> service.guardar(model));
+    }
+
+    @Test
+    void guardar_cuandoPeliculaNotFound_lanzaRecursoNoEncontradoException() {
+        ResenasModel model = new ResenasModel();
+        model.setTitulo("PeliculaInexistente");
+        model.setComentario("Comentario");
+        model.setCalificaciones(5);
+
+        when(peliculaClient.obtenerPorTitulo("PeliculaInexistente"))
+            .thenThrow(mock(FeignException.NotFound.class));
+
+        assertThrows(RecursoNoEncontradoException.class, () -> service.guardar(model));
     }
 }

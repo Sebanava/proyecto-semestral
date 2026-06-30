@@ -1,10 +1,13 @@
 package com.arriendo.pago;
 
 import com.arriendo.pago.client.RentalClient;
+import com.arriendo.pago.exception.RecursoNoEncontradoException;
+import com.arriendo.pago.exception.ServicioNoDisponibleException;
 import com.arriendo.pago.model.PagoModel;
 import com.arriendo.pago.repository.PagoRepository;
 import com.arriendo.pago.service.PagoService;
 import com.arriendo.pago.DTO.RentalDTO;
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,6 +29,8 @@ class PagoServiceTest {
     @InjectMocks
     private PagoService service;
 
+    // ── Tests existentes ────────────────────────────────────────
+
     @Test
     void procesarPago_cuandoTarjetaInvalida_lanzaExcepcion() {
         PagoModel model = new PagoModel();
@@ -33,7 +38,6 @@ class PagoServiceTest {
         model.setCvv("123");
         model.setFecha_vencimiento("12/26");
         model.setId_rental(1L);
-
         assertThrows(RuntimeException.class, () -> service.procesarPago(model));
     }
 
@@ -44,7 +48,6 @@ class PagoServiceTest {
         model.setCvv("12");
         model.setFecha_vencimiento("12/26");
         model.setId_rental(1L);
-
         assertThrows(RuntimeException.class, () -> service.procesarPago(model));
     }
 
@@ -55,11 +58,9 @@ class PagoServiceTest {
         model.setCvv("123");
         model.setFecha_vencimiento("12/26");
         model.setId_rental(1L);
-
         RentalDTO rental = new RentalDTO();
         rental.setEstado("pagado");
         when(rentalClient.obtenerRental(1L)).thenReturn(rental);
-
         assertThrows(RuntimeException.class, () -> service.procesarPago(model));
     }
 
@@ -70,16 +71,43 @@ class PagoServiceTest {
         model.setCvv("123");
         model.setFecha_vencimiento("12/26");
         model.setId_rental(1L);
-
         RentalDTO rental = new RentalDTO();
         rental.setEstado("pendiente");
         rental.setMonto(5000);
         when(rentalClient.obtenerRental(1L)).thenReturn(rental);
         when(repository.save(any(pago.class))).thenReturn(new pago());
         doNothing().when(rentalClient).pagarRental(1L);
-
         String resultado = service.procesarPago(model);
-
         assertTrue(resultado.contains("aprobado") || resultado.contains("5000"));
+    }
+
+    // ── Tests nuevos: Feign error handling ──────────────────────
+
+    @Test
+    void procesarPago_cuandoRentalServiceNoDisponible_lanzaServicioNoDisponibleException() {
+        PagoModel model = new PagoModel();
+        model.setNumero_tarjeta("1234567890123456");
+        model.setCvv("123");
+        model.setFecha_vencimiento("12/26");
+        model.setId_rental(1L);
+
+        when(rentalClient.obtenerRental(1L))
+            .thenThrow(mock(FeignException.class));
+
+        assertThrows(ServicioNoDisponibleException.class, () -> service.procesarPago(model));
+    }
+
+    @Test
+    void procesarPago_cuandoRentalNotFound_lanzaRecursoNoEncontradoException() {
+        PagoModel model = new PagoModel();
+        model.setNumero_tarjeta("1234567890123456");
+        model.setCvv("123");
+        model.setFecha_vencimiento("12/26");
+        model.setId_rental(99L);
+
+        when(rentalClient.obtenerRental(99L))
+            .thenThrow(mock(FeignException.NotFound.class));
+
+        assertThrows(RecursoNoEncontradoException.class, () -> service.procesarPago(model));
     }
 }
