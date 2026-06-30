@@ -22,7 +22,7 @@ Start-Sleep -Seconds 18
 
 # 3-11. Iniciar los 9 microservicios
 $servicios = @(
-    @{ jar = "$PSScriptRoot\peliculas (1)\peliculas\target\peliculas-0.0.1-SNAPSHOT.jar"; nombre = "Peliculas   "; puerto = 8081; num = 3 },
+    @{ jar = "$PSScriptRoot\peliculas\peliculas\target\peliculas-0.0.1-SNAPSHOT.jar"; nombre = "Peliculas   "; puerto = 8081; num = 3 },
     @{ jar = "$PSScriptRoot\clientes\clientes\target\clientes-0.0.1-SNAPSHOT.jar";         nombre = "Clientes    "; puerto = 8082; num = 4 },
     @{ jar = "$PSScriptRoot\login\login\target\login-0.0.1-SNAPSHOT.jar";                  nombre = "Login       "; puerto = 8083; num = 5 },
     @{ jar = "$PSScriptRoot\rental\rental\target\rental-0.0.1-SNAPSHOT.jar";               nombre = "Rental      "; puerto = 8084; num = 6 },

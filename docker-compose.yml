@@ -39,7 +39,7 @@ services:
       - arriendo-network
 
   peliculas:
-    build: ./peliculas (1)/peliculas
+    build: ./peliculas/peliculas
     container_name: peliculas
     ports:
       - "8081:8081"
