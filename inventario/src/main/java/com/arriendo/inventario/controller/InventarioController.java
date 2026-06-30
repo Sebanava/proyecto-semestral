@@ -8,48 +8,54 @@ import com.arriendo.inventario.Inventario;
 import com.arriendo.inventario.model.InventarioModel;
 import com.arriendo.inventario.service.InventarioService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/inventario")
+@Tag(name = "Inventario", description = "Control de stock disponible y arrendado por película")
 public class InventarioController {
 
     @Autowired
     private InventarioService service;
 
-    @Operation(
-        summary = "Obtener todo el inventario",
-        description = "Retorna el inventario completo con stock_total, stock_disponible y stock_arrendadas de cada película."
-    )
+    @Operation(summary = "Obtener todo el inventario", description = "Retorna el inventario completo con stock_total, stock_disponible y stock_arrendadas de cada película.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Inventario completo retornado exitosamente")
+    })
     @GetMapping
     public ResponseEntity<List<Inventario>> obtenerTodo() {
         return ResponseEntity.ok(service.obtenerTodo());
     }
 
-    @Operation(
-        summary = "Obtener inventario por ID",
-        description = "Busca un registro de inventario por su ID. Retorna 404 si no existe."
-    )
+    @Operation(summary = "Obtener inventario por ID", description = "Busca un registro de inventario por su ID. Retorna 404 si no existe.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Inventario encontrado"),
+        @ApiResponse(responseCode = "404", description = "Inventario no encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<Inventario> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.obtenerPorId(id));
     }
 
-    @Operation(
-        summary = "Obtener inventario por ID de película",
-        description = "Consulta el stock de una película específica usando su ID. Retorna 404 si la película no tiene inventario registrado."
-    )
+    @Operation(summary = "Obtener inventario por ID de película", description = "Consulta el stock de una película específica. Retorna 404 si la película no tiene inventario registrado.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Inventario de la película encontrado"),
+        @ApiResponse(responseCode = "404", description = "No hay inventario para esa película")
+    })
     @GetMapping("/pelicula/{idPelicula}")
     public ResponseEntity<Inventario> obtenerPorIdPelicula(@PathVariable Long idPelicula) {
         return ResponseEntity.ok(service.obtenerPorIdPelicula(idPelicula));
     }
 
-    @Operation(
-        summary = "Crear registro de inventario",
-        description = "Crea el inventario inicial para una película. Solo accesible con rol ADMIN. " +
-                      "Debe ingresarse stock_total, stock_disponible y stock_arrendadas. " +
-                      "Retorna 403 si el rol no es ADMIN."
-    )
+    @Operation(summary = "Crear registro de inventario", description = "Crea el inventario inicial para una película. Solo accesible con rol ADMIN.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Inventario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "403", description = "No autorizado - se requiere rol ADMIN")
+    })
     @PostMapping
     public ResponseEntity<?> guardar(@Valid @RequestBody InventarioModel model, @RequestParam String rol) {
         if (!rol.equals("ADMIN")) {
@@ -58,11 +64,12 @@ public class InventarioController {
         return ResponseEntity.status(201).body(service.guardar(model));
     }
 
-    @Operation(
-        summary = "Actualizar inventario",
-        description = "Actualiza los datos de stock de una película. Solo accesible con rol ADMIN. " +
-                      "Retorna 404 si el inventario no existe."
-    )
+    @Operation(summary = "Actualizar inventario", description = "Actualiza los datos de stock de una película. Solo accesible con rol ADMIN.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Inventario actualizado exitosamente"),
+        @ApiResponse(responseCode = "403", description = "No autorizado - se requiere rol ADMIN"),
+        @ApiResponse(responseCode = "404", description = "Inventario no encontrado")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody InventarioModel model, @RequestParam String rol) {
         if (!rol.equals("ADMIN")) {
@@ -71,10 +78,11 @@ public class InventarioController {
         return ResponseEntity.ok(service.actualizar(id, model));
     }
 
-    @Operation(
-        summary = "Eliminar inventario",
-        description = "Elimina el registro de inventario de una película. Solo accesible con rol ADMIN."
-    )
+    @Operation(summary = "Eliminar inventario", description = "Elimina el registro de inventario de una película. Solo accesible con rol ADMIN.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Inventario eliminado exitosamente"),
+        @ApiResponse(responseCode = "403", description = "No autorizado - se requiere rol ADMIN")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id, @RequestParam String rol) {
         if (!rol.equals("ADMIN")) {
@@ -84,24 +92,24 @@ public class InventarioController {
         return ResponseEntity.ok("Inventario eliminado con exito");
     }
 
-    @Operation(
-        summary = "Reducir stock disponible",
-        description = "Reduce en 1 el stock_disponible e incrementa en 1 el stock_arrendadas. " +
-                      "Es llamado automáticamente por el servicio de Rental al crear un arriendo. " +
-                      "Retorna 400 si no hay stock disponible (stock_disponible = 0)."
-    )
+    @Operation(summary = "Reducir stock disponible", description = "Reduce en 1 el stock_disponible e incrementa en 1 el stock_arrendadas. Llamado automáticamente por Rental al crear un arriendo.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Stock reducido exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Sin stock disponible (stock_disponible = 0)"),
+        @ApiResponse(responseCode = "404", description = "Inventario no encontrado para esa película")
+    })
     @PostMapping("/reducir/{idPelicula}")
     public ResponseEntity<String> reducirStock(@PathVariable Long idPelicula) {
         service.reducirStock(idPelicula);
         return ResponseEntity.ok("Stock reducido exitosamente");
     }
 
-    @Operation(
-        summary = "Aumentar stock disponible",
-        description = "Incrementa en 1 el stock_disponible y reduce en 1 el stock_arrendadas. " +
-                      "Es llamado automáticamente por el servicio de Rental al devolver una película. " +
-                      "Retorna 400 si no hay unidades arrendadas para devolver."
-    )
+    @Operation(summary = "Aumentar stock disponible", description = "Incrementa en 1 el stock_disponible y reduce en 1 el stock_arrendadas. Llamado automáticamente por Rental al devolver una película.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Stock restaurado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "No hay unidades arrendadas para devolver"),
+        @ApiResponse(responseCode = "404", description = "Inventario no encontrado para esa película")
+    })
     @PutMapping("/aumentar/{idPelicula}")
     public ResponseEntity<String> aumentarStock(@PathVariable Long idPelicula) {
         service.aumentarStock(idPelicula);
