@@ -8,63 +8,63 @@ spring:
     gateway:
       routes:
         - id: peliculas_route
-          uri: lb://PELICULAS
+          uri: https://peliculas-production-a9ea.up.railway.app
           predicates:
             - Path=/api/peliculas/**
           filters:
             - StripPrefix=1
 
         - id: clientes_route
-          uri: lb://CLIENTES
+          uri: https://clientes-production-4a32.up.railway.app
           predicates:
             - Path=/api/clientes/**
           filters:
             - StripPrefix=1
 
         - id: login_route
-          uri: lb://LOGIN
+          uri: https://login-production-42cc.up.railway.app
           predicates:
             - Path=/api/usuario/**
           filters:
             - StripPrefix=1
 
         - id: rental_route
-          uri: lb://RENTAL
+          uri: https://rental-production-ac3c.up.railway.app
           predicates:
             - Path=/api/rental/**
           filters:
             - StripPrefix=1
 
         - id: pago_route
-          uri: lb://PAGO
+          uri: https://pago-production-c7d7.up.railway.app
           predicates:
             - Path=/api/pago/**
           filters:
             - StripPrefix=1
 
         - id: inventario_route
-          uri: lb://INVENTARIO
+          uri: https://inventario-production-67d4.up.railway.app
           predicates:
             - Path=/api/inventario/**
           filters:
             - StripPrefix=1
 
         - id: alertas_route
-          uri: lb://ALERTAS
+          uri: https://alertas-production-e6b3.up.railway.app
           predicates:
             - Path=/api/alertas/**
           filters:
             - StripPrefix=1
 
         - id: reportes_route
-          uri: lb://REPORTES
+          uri: https://reportes-production-cc61.up.railway.app
           predicates:
             - Path=/api/reportes/**
           filters:
             - StripPrefix=1
 
         - id: resenas_route
-          uri: lb://RESENAS
+          uri: https://resenas-production.up.railway.app
           predicates:
             - Path=/api/resenas/**
           filters:
@@ -74,3 +74,4 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+    enabled: false
