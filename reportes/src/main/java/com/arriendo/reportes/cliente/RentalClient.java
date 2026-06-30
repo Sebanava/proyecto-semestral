@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.arriendo.reportes.DTO.RentalDTO;
 
-@FeignClient(name = "rental", url = "http://localhost:8083" )
+@FeignClient(name = "RENTAL")
 
 public interface RentalClient {
 

@@ -36,18 +36,22 @@ ex.getBindingResult().getFieldErrors().forEach(error -> {
     }
 
     @ExceptionHandler(RuntimeException.class)
-public ResponseEntity<ErrorDTO> manejarRuntimeException(
-        RuntimeException ex,
-        HttpServletRequest request) {
+    public ResponseEntity<ErrorDTO> manejarRuntimeException(
+            RuntimeException ex,
+            HttpServletRequest request) {
 
-    ErrorDTO errorDTO = new ErrorDTO(
-        LocalDateTime.now(),
-        400,
-        ex.getMessage(),
-        null,
-        request.getRequestURI()
-    );
+        String mensaje = ex.getMessage() != null ? ex.getMessage() : "";
+        boolean esNoEncontrado = mensaje.toLowerCase().contains("no encontrado");
+        int codigo = esNoEncontrado ? 404 : 400;
 
-    return ResponseEntity.badRequest().body(errorDTO);
-}
+        ErrorDTO errorDTO = new ErrorDTO(
+            LocalDateTime.now(),
+            codigo,
+            mensaje,
+            null,
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(codigo).body(errorDTO);
+    }
 }

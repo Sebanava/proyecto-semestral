@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.arriendo.alertas.DTO.InventarioDTO;
 
-@FeignClient(name = "inventario", url = "http://localhost:8085")
+@FeignClient(name = "INVENTARIO")
 public interface InventarioClient {
 
     @GetMapping("/inventario/pelicula/{idPelicula}")

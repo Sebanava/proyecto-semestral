@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: LOGIN
+  profiles:
+    active: dev

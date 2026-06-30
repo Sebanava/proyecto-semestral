@@ -8,7 +8,7 @@ import com.arriendo.alertas.DTO.PeliculaDTO;
 
 
 
-@FeignClient(name = "peliculas", url = "http://localhost:8080")
+@FeignClient(name = "PELICULAS")
 public interface PeliculaClient {
 
 @GetMapping("/peliculas/titulo/{titulo}")

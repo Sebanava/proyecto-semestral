@@ -9,6 +9,7 @@
 
     import com.arriendo.login.login;
     import com.arriendo.login.DTO.LoginDTO;
+    import com.arriendo.login.DTO.RespuestaLoginDTO;
     import com.arriendo.login.model.LoginModel;
     import com.arriendo.login.repository.LoginRepository;
 
@@ -22,18 +23,24 @@
             return repository.findAll();
         }
 
-        public ResponseEntity<String> login(LoginDTO dto) {
+        public ResponseEntity<RespuestaLoginDTO> login(LoginDTO dto) {
             Optional<login> usuario = repository.findByEmail(dto.getEmail());
-            
+
             if (usuario.isEmpty()) {
-                return ResponseEntity.status(401).body("Usuario no encontrado");
+                return ResponseEntity.status(401).build();
             }
-            
+
             if (!usuario.get().getPassword().equals(dto.getPassword())) {
-                return ResponseEntity.status(401).body("Contraseña incorrecta");
+                return ResponseEntity.status(401).build();
             }
-            
-            return ResponseEntity.ok("Bienvenido " + usuario.get().getNombre() + "| Rol :" +    usuario.get().getRol());
+
+            RespuestaLoginDTO respuesta = new RespuestaLoginDTO(
+                usuario.get().getNombre(),
+                usuario.get().getEmail(),
+                usuario.get().getRol()
+            );
+
+            return ResponseEntity.ok(respuesta);
         }
 
         public login guardar(login login){

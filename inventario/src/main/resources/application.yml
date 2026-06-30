@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: INVENTARIO
+  profiles:
+    active: dev

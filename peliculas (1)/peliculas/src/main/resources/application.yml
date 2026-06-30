@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: PELICULAS
+  profiles:
+    active: dev

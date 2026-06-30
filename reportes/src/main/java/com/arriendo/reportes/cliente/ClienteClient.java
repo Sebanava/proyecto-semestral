@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.arriendo.reportes.DTO.ClienteDTO;
 
 
-    @FeignClient(name = "cliente", url = "http://localhost:8081")
+    @FeignClient(name = "CLIENTES")
     public interface ClienteClient {
 
         @GetMapping("/clientes")

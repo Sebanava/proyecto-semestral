@@ -33,9 +33,25 @@ public class ResenasService {
             return resenas;
     }
 
+    public Resenas obtenerPorId(Long id){
+        return repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Reseña no encontrada"));
+    }
+
+    public Resenas actualizar(Long id, ResenasModel model){
+        Resenas resena = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Reseña no encontrada"));
+        resena.setTitulo(model.getTitulo());
+        resena.setComentario(model.getComentario());
+        resena.setCalificaciones(model.getCalificaciones());
+        return repository.save(resena);
+    }
+
     public void eliminar(long id){
+        repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Reseña no encontrada"));
         repository.deleteById(id);
-    } 
+    }
 
     public Resenas guardar(ResenasModel model){
         peliculaClient.obtenerPorTitulo(model.getTitulo());

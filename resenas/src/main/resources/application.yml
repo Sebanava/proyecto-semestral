@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: RESENAS
+  profiles:
+    active: dev

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class RentalDTO {
     private long id;
-    private String monto;
+    private double monto;
     private String estado;
 
 }

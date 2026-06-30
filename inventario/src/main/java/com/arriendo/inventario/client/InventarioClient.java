@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
-@FeignClient(name = "peliculas", url = "http://localhost:8080")
+@FeignClient(name = "PELICULAS")
 public interface InventarioClient {
 
     @PostMapping("/inventario/reducir/{idPelicula}")

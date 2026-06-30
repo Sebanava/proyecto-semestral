@@ -66,4 +66,17 @@ public class InventarioService {
         inventario.setStock_arrendadas(inventario.getStock_arrendadas() + 1);
         repository.save(inventario);
     }
+
+    public void aumentarStock(Long idPelicula){
+        Inventario inventario = repository.findByIdPelicula(idPelicula)
+            .orElseThrow(() -> new RuntimeException("Inventario no encontrado"));
+
+        if(inventario.getStock_arrendadas() <= 0){
+            throw new RuntimeException("No hay unidades arrendadas para devolver");
+        }
+
+        inventario.setStock_disponible(inventario.getStock_disponible() + 1);
+        inventario.setStock_arrendadas(inventario.getStock_arrendadas() - 1);
+        repository.save(inventario);
+    }
 }

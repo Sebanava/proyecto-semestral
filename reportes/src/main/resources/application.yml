@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: REPORTES
+  profiles:
+    active: dev

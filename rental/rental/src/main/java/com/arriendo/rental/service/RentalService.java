@@ -29,6 +29,10 @@ public class RentalService {
     }
 
     public rental guardar(RentalModel model){
+        if (model.getFecha_fin().isBefore(model.getFecha_inicio())) {
+            throw new RuntimeException("La fecha de fin no puede ser anterior a la fecha de inicio");
+        }
+
         PeliculaDTO pelicula = peliculaClient.obtenerPorId(model.getId_pelicula());
 
         rental nuevoRental = new rental();
@@ -55,7 +59,7 @@ public class RentalService {
 
     public rental actualizar(long id, RentalModel model){
         rental rentalExistente = repository.findById(id)
-        .orElseThrow(()-> new RuntimeException("no encontrado"));
+        .orElseThrow(()-> new RuntimeException("Arriendo no encontrado"));
             rentalExistente.setId_cliente(model.getId_cliente());
             rentalExistente.setId_pelicula(model.getId_pelicula());
             rentalExistente.setFecha_inicio(model.getFecha_inicio());
@@ -63,6 +67,27 @@ public class RentalService {
             rentalExistente.setEstado(model.getEstado());
 
             return repository.save(rentalExistente);
+    }
+
+    public void pagar(Long id){
+        rental rentalExistente = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Arriendo no encontrado"));
+        if ("pagado".equals(rentalExistente.getEstado())) {
+            throw new RuntimeException("Este arriendo ya fue pagado");
+        }
+        rentalExistente.setEstado("pagado");
+        repository.save(rentalExistente);
+    }
+
+    public void devolver(Long id){
+        rental rentalExistente = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Arriendo no encontrado"));
+        if ("devuelto".equals(rentalExistente.getEstado())) {
+            throw new RuntimeException("Este arriendo ya fue devuelto");
+        }
+        rentalExistente.setEstado("devuelto");
+        repository.save(rentalExistente);
+        inventarioClient.AumentarStock(rentalExistente.getId_pelicula());
     }
 
 }
