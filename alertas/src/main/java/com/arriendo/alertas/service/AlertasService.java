@@ -41,7 +41,7 @@ public class AlertasService {
 
     public alertas actualizar(long id, AlertasModel model){
         alertas alertas = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Alerta no encontrada"));
+            .orElseThrow(() -> new RecursoNoEncontradoException("Alerta no encontrada"));
         alertas.setId_pelicula(model.getId_pelicula());
         alertas.setTipo(model.getTipo());
         alertas.setFecha(model.getFecha());
@@ -50,13 +50,13 @@ public class AlertasService {
 
     public void eliminar(long id){
         repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Alerta no encontrada"));
+            .orElseThrow(() -> new RecursoNoEncontradoException("Alerta no encontrada"));
         repository.deleteById(id);
     }
 
     public alertas ObtenerPorIncidencia(long id){
         return repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Alerta no encontrada"));
+            .orElseThrow(() -> new RecursoNoEncontradoException("Alerta no encontrada"));
     }
 
     public String VerificarStock(String titulo){

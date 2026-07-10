@@ -28,19 +28,19 @@ public class ResenasService {
     public List<Resenas> ObtenerPorTitulo(String titulo){
         List<Resenas> resenas = repository.findByTitulo(titulo);
         if (resenas.isEmpty()){
-            throw new RuntimeException("No se encuentrar reseñas para " + titulo);
+            throw new RecursoNoEncontradoException("No se encontraron reseñas para " + titulo);
         }
         return resenas;
     }
 
     public Resenas obtenerPorId(Long id){
         return repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Reseña no encontrada"));
+            .orElseThrow(() -> new RecursoNoEncontradoException("Reseña no encontrada"));
     }
 
     public Resenas actualizar(Long id, ResenasModel model){
         Resenas resena = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Reseña no encontrada"));
+            .orElseThrow(() -> new RecursoNoEncontradoException("Reseña no encontrada"));
         resena.setTitulo(model.getTitulo());
         resena.setComentario(model.getComentario());
         resena.setCalificaciones(model.getCalificaciones());
@@ -49,7 +49,7 @@ public class ResenasService {
 
     public void eliminar(long id){
         repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Reseña no encontrada"));
+            .orElseThrow(() -> new RecursoNoEncontradoException("Reseña no encontrada"));
         repository.deleteById(id);
     }
 
