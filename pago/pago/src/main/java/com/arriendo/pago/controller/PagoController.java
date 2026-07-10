@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.arriendo.pago.pago;
 import com.arriendo.pago.model.PagoModel;
+import com.arriendo.pago.model.PagoActualizarModel;
 import com.arriendo.pago.service.PagoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -63,11 +64,11 @@ public class PagoController {
         @ApiResponse(responseCode = "404", description = "Pago no encontrado")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody pago pagoActualizado, @RequestParam String rol) {
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody PagoActualizarModel model, @RequestParam String rol) {
         if (!rol.equals("ADMIN")) {
             return ResponseEntity.status(403).body("Solo un ADMIN puede actualizar pagos");
         }
-        return ResponseEntity.ok(service.actualizar(id, pagoActualizado));
+        return ResponseEntity.ok(service.actualizar(id, model));
     }
 
     @Operation(summary = "Eliminar pago", description = "Elimina un registro de pago del sistema. Solo accesible con rol ADMIN.")

@@ -12,6 +12,7 @@ import com.arriendo.pago.client.RentalClient;
 import com.arriendo.pago.exception.RecursoNoEncontradoException;
 import com.arriendo.pago.exception.ServicioNoDisponibleException;
 import com.arriendo.pago.model.PagoModel;
+import com.arriendo.pago.model.PagoActualizarModel;
 import com.arriendo.pago.repository.PagoRepository;
 
 @Service
@@ -73,11 +74,11 @@ public class PagoService {
             .orElseThrow(() -> new RuntimeException("Pago no encontrado"));
     }
 
-    public pago actualizar(Long id, pago pagoActualizado){
+    public pago actualizar(Long id, PagoActualizarModel model){
         pago pagoExistente = repository.findById(id)
             .orElseThrow(() -> new RuntimeException("Pago no encontrado"));
-        pagoExistente.setResultado(pagoActualizado.getResultado());
-        pagoExistente.setFecha(pagoActualizado.getFecha());
+        pagoExistente.setResultado(model.getResultado());
+        pagoExistente.setFecha(model.getFecha());
         return repository.save(pagoExistente);
     }
 
