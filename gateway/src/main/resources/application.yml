@@ -8,63 +8,63 @@ spring:
     gateway:
       routes:
         - id: peliculas_route
-          uri: http://localhost:8081
+          uri: lb://PELICULAS
           predicates:
             - Path=/api/peliculas/**
           filters:
             - StripPrefix=1
 
         - id: clientes_route
-          uri: http://localhost:8082
+          uri: lb://CLIENTES
           predicates:
             - Path=/api/clientes/**
           filters:
             - StripPrefix=1
 
         - id: login_route
-          uri: http://localhost:8083
+          uri: lb://LOGIN
           predicates:
             - Path=/api/usuario/**
           filters:
             - StripPrefix=1
 
         - id: rental_route
-          uri: http://localhost:8084
+          uri: lb://RENTAL
           predicates:
             - Path=/api/rental/**
           filters:
             - StripPrefix=1
 
         - id: pago_route
-          uri: http://localhost:8085
+          uri: lb://PAGO
           predicates:
             - Path=/api/pago/**
           filters:
             - StripPrefix=1
 
         - id: inventario_route
-          uri: http://localhost:8086
+          uri: lb://INVENTARIO
           predicates:
             - Path=/api/inventario/**
           filters:
             - StripPrefix=1
 
         - id: alertas_route
-          uri: http://localhost:8087
+          uri: lb://ALERTAS
           predicates:
             - Path=/api/alertas/**
           filters:
             - StripPrefix=1
 
         - id: reportes_route
-          uri: http://localhost:8088
+          uri: lb://REPORTES
           predicates:
             - Path=/api/reportes/**
           filters:
             - StripPrefix=1
 
         - id: resenas_route
-          uri: http://localhost:8089
+          uri: lb://RESENAS
           predicates:
             - Path=/api/resenas/**
           filters:
@@ -72,4 +72,5 @@ spring:
 
 eureka:
   client:
-    enabled: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
