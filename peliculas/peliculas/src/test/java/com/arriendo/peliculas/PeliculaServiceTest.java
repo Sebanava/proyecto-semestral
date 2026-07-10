@@ -72,4 +72,5 @@ class PeliculaServiceTest {
         assertEquals("Avatar", resultado.getTitulo());
         verify(repository, times(1)).save(any(Pelicula.class));
     }
+    
 }
