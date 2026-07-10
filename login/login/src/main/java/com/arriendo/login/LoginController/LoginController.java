@@ -48,8 +48,8 @@ public class LoginController {
         @ApiResponse(responseCode = "400", description = "Datos inválidos")
     })
     @PostMapping
-    public ResponseEntity<login> guardar(@Valid @RequestBody login login) {
-        return ResponseEntity.status(201).body(service.guardar(login));
+    public ResponseEntity<login> guardar(@Valid @RequestBody LoginModel model) {
+        return ResponseEntity.status(201).body(service.guardar(model));
     }
 
     @Operation(summary = "Actualizar usuario", description = "Actualiza datos de un usuario existente. Solo accesible con rol ADMIN.")

@@ -43,7 +43,15 @@
             return ResponseEntity.ok(respuesta);
         }
 
-        public login guardar(login login){
+        public login guardar(LoginModel model){
+            login login = new login();
+            login.setApellido(model.getApellido());
+            login.setEmail(model.getEmail());
+            login.setNombre(model.getNombre());
+            login.setNumero(model.getNumero());
+            login.setPassword(model.getPassword());
+            login.setRut(model.getRut());
+            login.setRol("CLIENTE");
             return repository.save(login);
         }
 

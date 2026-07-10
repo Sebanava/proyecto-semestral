@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-@Schema(description = "Datos requeridos para actualizar un usuario del sistema")
+@Schema(description = "Datos requeridos para crear o actualizar un usuario del sistema")
 public class LoginModel {
 
     @Schema(description = "Apellido del usuario", example = "Pérez")
@@ -22,7 +22,7 @@ public class LoginModel {
     private String email;
 
     @Schema(description = "Número de teléfono", example = "987654321")
-    @Min(value = 0, message = "el numero non puede estar vacio ")
+    @Min(value = 0, message = "El número no puede ser negativo")
     private int numero;
 
     @Schema(description = "Contraseña del usuario", example = "miPassword123")
